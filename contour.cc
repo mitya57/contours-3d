@@ -193,8 +193,8 @@ R2Rectangle *rectangle) {
 	//qDebug() << "our point is" << x << y;
 	if (bitmap[y*width+x]) return 0;
 
-    bool inside = false;
-    for (i = 0; i < x; ++i)
+	bool inside = false;
+	for (i = 0; i < x; ++i)
 		if (bitmap[y*width+i])
 			inside = true;
 
