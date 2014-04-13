@@ -7,6 +7,8 @@ template <class CoordType=float> struct Vector3D;
 template <class CoordType=float> struct Box;
 template <class CoordType=float> struct VoxelArray;
 
+typedef Vector3D<unsigned> Index3D;
+
 template <class CoordType>
 struct Point3D {
     CoordType x;
@@ -42,7 +44,7 @@ struct Vector3D {
     inline CoordType length() const {
         return sqrt(x * x + y * y + z * z);
     }
-    inline Vector3D<CoordType> operator * (Vector3D<unsigned> &factors) const {
+    inline Vector3D<CoordType> operator * (Index3D &factors) const {
         return Vector3D<CoordType>(x * factors.x, y * factors.y, z * factors.z);
     }
     inline Vector3D<CoordType> &operator = (Vector3D<CoordType> &that) {
@@ -75,20 +77,20 @@ struct VoxelArray {
     bool *voxels;
     Point3D<CoordType> start;
     Vector3D<CoordType> voxelSize;
-    Vector3D<unsigned> size;
+    Index3D size;
 
     inline Box<CoordType> getBox() const {
         return Box<CoordType>(start, start + voxelSize * size);
     }
-    inline bool verifyIndex(Vector3D<unsigned> index) const {
+    inline bool verifyIndex(Index3D index) const {
         return (index.x > 0 && index.x < size.x &&
                 index.y > 0 && index.y < size.y &&
                 index.z > 0 && index.z < size.z);
     }
-    inline bool &operator [] (Vector3D<unsigned> index) {
+    inline bool &operator [] (Index3D index) {
         return voxels[index.z * size.x * size.y + index.y * size.x + index.z];
     }
-    inline CoordType getVoxelCenter (Vector3D<unsigned> index) const {
+    inline CoordType getVoxelCenter (Index3D index) const {
         return start + (voxelSize / 2) + (voxelSize * index);
     }
 };

@@ -3,7 +3,7 @@
 template <class CoordType>
 void processPoint(Point3D<CoordType>     point,
                   VoxelArray<CoordType> *array,
-                  Vector3D<unsigned>     index,
+                  Index3D                index,
                   CoordType             *currentLength)
 {
     if (!array[index] || !array->verifyIndex(index)) {
@@ -22,7 +22,7 @@ CoordType getDistance(Point3D<CoordType>     point,
     CoordType currentLength = -1;
     int x, y, z;
 
-    Vector3D<unsigned> initialIndex(
+    Index3D initialIndex(
         (point.x - array->start.x) / array->voxelSize.x,
         (point.y - array->start.y) / array->voxelSize.y,
         (point.z - array->start.z) / array->voxelSize.z
@@ -36,10 +36,10 @@ CoordType getDistance(Point3D<CoordType>     point,
         for (x = initialIndex.x - layerInd; x <= initialIndex.x + layerInd; ++x) {
             for (y = initialIndex.y - layerInd; y <= initialIndex.y + layerInd; ++y) {
                 processPoint(point, array,
-                             Vector3D<unsigned>(x, y, initialIndex.z - layerInd),
+                             Index3D(x, y, initialIndex.z - layerInd),
                              &currentLength);
                 processPoint(point, array,
-                             Vector3D<unsigned>(x, y, initialIndex.z + layerInd),
+                             Index3D(x, y, initialIndex.z + layerInd),
                              &currentLength);
             }
         }
@@ -47,10 +47,10 @@ CoordType getDistance(Point3D<CoordType>     point,
         for (x = initialIndex.x - layerInd; x <= initialIndex.x + layerInd; ++x) {
             for (z = initialIndex.z - layerInd + 1; z < initialIndex.z + layerInd; ++z) {
                 processPoint(point, array,
-                             Vector3D<unsigned>(x, initialIndex.y - layerInd, z),
+                             Index3D(x, initialIndex.y - layerInd, z),
                              &currentLength);
                 processPoint(point, array,
-                             Vector3D<unsigned>(x, initialIndex.y + layerInd, z),
+                             Index3D(x, initialIndex.y + layerInd, z),
                              &currentLength);
             }
         }
@@ -58,10 +58,10 @@ CoordType getDistance(Point3D<CoordType>     point,
         for (y = initialIndex.y - layerInd + 1; y < initialIndex.y + layerInd; ++y) {
             for (z = initialIndex.z - layerInd + 1; z < initialIndex.z + layerInd; ++z) {
                 processPoint(point, array,
-                             Vector3D<unsigned>(initialIndex.x - layerInd, y, z),
+                             Index3D(initialIndex.x - layerInd, y, z),
                              &currentLength);
                 processPoint(point, array,
-                             Vector3D<unsigned>(initialIndex.x + layerInd, y, z),
+                             Index3D(initialIndex.x + layerInd, y, z),
                              &currentLength);
             }
         }
