@@ -18,7 +18,7 @@ struct Point3D {
     Point3D<CoordType>(CoordType x, CoordType y, CoordType z):
         x(x), y(y), z(z) {}
 
-    inline Point3D<CoordType> operator + (Vector3D<CoordType> &that) const {
+    inline Point3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
         return Point3D<CoordType>(x + that.x, y + that.y, z + that.z);
     }
     inline Point3D<CoordType> operator * (CoordType factor) const {
@@ -27,7 +27,7 @@ struct Point3D {
     inline Point3D<CoordType> operator / (CoordType factor) const {
         return Point3D<CoordType>(x / factor, y / factor, z / factor);
     }
-    inline Vector3D<CoordType> operator - (Point3D<CoordType> &that) const {
+    inline Vector3D<CoordType> operator - (Point3D<CoordType> const &that) const {
         return Vector3D<CoordType>(x - that.x, y - that.y, z - that.z);
     }
 };
@@ -44,16 +44,16 @@ struct Vector3D {
     inline CoordType length() const {
         return sqrt(x * x + y * y + z * z);
     }
-    inline Vector3D<CoordType> operator * (Index3D &factors) const {
+    inline Vector3D<CoordType> operator * (Index3D const &factors) const {
         return Vector3D<CoordType>(x * factors.x, y * factors.y, z * factors.z);
     }
-    inline Vector3D<CoordType> &operator = (Vector3D<CoordType> &that) {
+    inline Vector3D<CoordType> &operator = (Vector3D<CoordType> const &that) {
         x = that.x;
         y = that.y;
         z = that.z;
         return *this;
     }
-    inline Vector3D<CoordType> operator + (Vector3D<CoordType> &that) const {
+    inline Vector3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
         return Vector3D<CoordType>(x + that.x, y + that.y, z + that.z);
     }
 };
@@ -82,15 +82,15 @@ struct VoxelArray {
     inline Box<CoordType> getBox() const {
         return Box<CoordType>(start, start + voxelSize * size);
     }
-    inline bool verifyIndex(Index3D index) const {
+    inline bool verifyIndex(Index3D const &index) const {
         return (index.x > 0 && index.x < size.x &&
                 index.y > 0 && index.y < size.y &&
                 index.z > 0 && index.z < size.z);
     }
-    inline bool &operator [] (Index3D index) {
+    inline bool &operator [] (Index3D const &index) {
         return voxels[index.z * size.x * size.y + index.y * size.x + index.z];
     }
-    inline CoordType getVoxelCenter (Index3D index) const {
+    inline CoordType getVoxelCenter (Index3D const &index) const {
         return start + (voxelSize / 2) + (voxelSize * index);
     }
 };
