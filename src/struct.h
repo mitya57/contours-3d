@@ -87,8 +87,11 @@ struct VoxelArray {
                 index.y > 0 && index.y < size.y &&
                 index.z > 0 && index.z < size.z);
     }
+    inline unsigned num(Index3D const &index) const {
+        return index.z * size.x * size.y + index.y * size.x + index.z;
+    }
     inline bool &operator [] (Index3D const &index) {
-        return voxels[index.z * size.x * size.y + index.y * size.x + index.z];
+        return voxels[num(index)];
     }
     inline CoordType getVoxelCenter (Index3D const &index) const {
         return start + (voxelSize / 2) + (voxelSize * index);
