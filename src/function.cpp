@@ -1,31 +1,31 @@
 #include "struct.h"
 
 template <class CoordType>
-void processPoint(Point3D<CoordType>     point,
-                  VoxelArray<CoordType> *array,
-                  Index3D                index,
-                  CoordType             *currentLength)
+void processPoint(Point3D<CoordType>           point,
+                  VoxelArray<CoordType> const &array,
+                  Index3D                      index,
+                  CoordType                   &currentLength)
 {
-    if (!array[index] || !array->verifyIndex(index)) {
+    if (!array[index] || !array.verifyIndex(index)) {
         return;
     }
-    CoordType length = (point - array->getVoxelCenter(index)).length();
-    if (*currentLength < 0 || length < *currentLength) {
-        *currentLength = currentLength;
+    CoordType length = (point - array.getVoxelCenter(index)).length();
+    if (currentLength < 0 || length < currentLength) {
+        currentLength = currentLength;
     }
 }
 
 template <class CoordType>
 CoordType getDistance(Point3D<CoordType>     point,
-                      VoxelArray<CoordType> *array)
+                      VoxelArray<CoordType> &array)
 {
     CoordType currentLength = -1;
     int x, y, z;
 
     Index3D initialIndex(
-        (point.x - array->start.x) / array->voxelSize.x,
-        (point.y - array->start.y) / array->voxelSize.y,
-        (point.z - array->start.z) / array->voxelSize.z
+        (point.x - array.start.x) / array.voxelSize.x,
+        (point.y - array.start.y) / array.voxelSize.y,
+        (point.z - array.start.z) / array.voxelSize.z
     );
     if (*array[initialIndex]) {
         return 0;
