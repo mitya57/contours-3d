@@ -1,4 +1,7 @@
 #include "struct.h"
+#include <set>
+
+#define D_EQUAL(d1, d2) (fabs(d1 - d2) < 1e-10)
 
 template <class CoordType>
 void processPoint(Point3D<CoordType>           point,
@@ -71,4 +74,96 @@ CoordType getDistance(Point3D<CoordType>     point,
     }
 
     return currentLength;
+}
+
+template <class CoordType, VoxelArray<CoordType> const &array, CoordType *distArray>
+struct IndexCompare3D {
+    bool operator() (Index3D const &ind1, Index3D const &ind2) const {
+        unsigned num1 = array.num(ind1);
+        unsigned num2 = array.num(ind2);
+        /* First, order by distance */
+        if (!D_EQUAL(distArray[num1], distArray[num2])) {
+            return distArray[num1] > distArray[num2];
+        }
+        /* If distances are equal, order by j */
+        return num1 > num2;
+    }
+};
+
+template <class CoordType>
+CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
+                            CoordType                   *distArray)
+/* We expect that distArray points to a memory of the same
+ * size as array.voxels. */
+{
+    Index3D neighbour;
+    Index3D &currentInd;
+    std::set<Index3D, IndexCompare3D<CoordType, array, distArray> > processSet;
+    CoordType dist, currentDist;
+    unsigned num;
+
+    for (unsigned x = 0; x < array.size.x; ++x) {
+        for (unsigned y = 0; y < array.size.y; ++y) {
+            for (unsigned z = 0; z < array.size.z; ++z) {
+                currentInd = Index3D(x, y, z);
+                num = array.num(currentInd);
+                if (array.voxels[num]) {
+                    distArray[num] = 0;
+                    processSet.insert(currentInd);
+                }
+            }
+        }
+    }
+
+    while (!processSet.empty()) {
+        /* States:
+         * - processed: distArray[array.num(index)] != -1 && not in the set
+         * - toProcess: in the set
+         * - null state: distArray[array.num(index)] == -1 && not in the set
+         */
+
+        /* 1) currentInd := (one in the set with lowest diff)
+         * 2) update distances for all neighbours that are not already
+         *    processed, insert them to the set if not yet there,
+         *    and move them if already there
+         * 3) remove currentInd from the set
+         */
+
+        currentInd = processSet.begin();
+
+        for (unsigned char j = 0; j < 27; ++j) {
+            Vector3D<signed char> diff(
+                j % 3,   (j % 9) / 3,   j / 9
+            );
+            if (
+                j == 13 || /* equal to currentInd */
+                !(currentInd.x || diff.x) ||
+                !(currentInd.y || diff.y) ||
+                !(currentInd.z || diff.z)
+            ) {
+                continue;
+            }
+            neighbour.x = currentInd.x + diff.x - 1;
+            neighbour.y = currentInd.y + diff.y - 1;
+            neighbour.z = currentInd.z + diff.z - 1;
+            if (
+                neighbour.x >= array.size.x ||
+                neighbour.y >= array.size.y ||
+                neighbour.z >= array.size.z
+            ) {
+                continue;
+            }
+
+            dist = distArray[array.num(currentInd)] +
+                   Vector3D<CoordType>(diff.x - 1, diff.y - 1, diff.z - 1).length();
+            num = array.num(neighbour);
+            if (distArray[num] < -.5) {
+                distArray[num] = dist;
+                processSet.insert(neighbour);
+            } else if (distArray[num] > dist) {
+                distArray[num] = dist;
+            }
+        }
+        processSet.erase(currentInd);
+    }
 }
