@@ -14,7 +14,7 @@ void processPoint(Point3D<CoordType>           point,
     }
     CoordType length = (point - array.getVoxelCenter(index)).length();
     if (currentLength < 0 || length < currentLength) {
-        currentLength = currentLength;
+        currentLength = length;
     }
 }
 
