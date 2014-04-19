@@ -120,9 +120,9 @@ CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
          * - processed: distArray[array.num(index)] != -1 && not in the set
          * - toProcess: in the set
          * - null state: distArray[array.num(index)] == -1 && not in the set
-         */
-
-        /* 1) currentInd := (one in the set with lowest diff)
+         *
+         * Procedure:
+         * 1) currentInd := (one in the set with lowest diff)
          * 2) update distances for all neighbours that are not already
          *    processed, insert them to the set if not yet there,
          *    and move them if already there
