@@ -23,14 +23,14 @@ CoordType getDistance(Point3D<CoordType>     point,
                       VoxelArray<CoordType> &array)
 {
     CoordType currentLength = -1;
-    int x, y, z;
+    unsigned x, y, z;
 
     Index3D initialIndex(
         (point.x - array.start.x) / array.voxelSize.x,
         (point.y - array.start.y) / array.voxelSize.y,
         (point.z - array.start.z) / array.voxelSize.z
     );
-    if (*array[initialIndex]) {
+    if (array[initialIndex]) {
         return 0;
     }
 
@@ -40,10 +40,10 @@ CoordType getDistance(Point3D<CoordType>     point,
             for (y = initialIndex.y - layerInd; y <= initialIndex.y + layerInd; ++y) {
                 processPoint(point, array,
                              Index3D(x, y, initialIndex.z - layerInd),
-                             &currentLength);
+                             currentLength);
                 processPoint(point, array,
                              Index3D(x, y, initialIndex.z + layerInd),
-                             &currentLength);
+                             currentLength);
             }
         }
         /* min y and max y */
@@ -51,10 +51,10 @@ CoordType getDistance(Point3D<CoordType>     point,
             for (z = initialIndex.z - layerInd + 1; z < initialIndex.z + layerInd; ++z) {
                 processPoint(point, array,
                              Index3D(x, initialIndex.y - layerInd, z),
-                             &currentLength);
+                             currentLength);
                 processPoint(point, array,
                              Index3D(x, initialIndex.y + layerInd, z),
-                             &currentLength);
+                             currentLength);
             }
         }
         /* min x and max x */
@@ -62,10 +62,10 @@ CoordType getDistance(Point3D<CoordType>     point,
             for (z = initialIndex.z - layerInd + 1; z < initialIndex.z + layerInd; ++z) {
                 processPoint(point, array,
                              Index3D(initialIndex.x - layerInd, y, z),
-                             &currentLength);
+                             currentLength);
                 processPoint(point, array,
                              Index3D(initialIndex.x + layerInd, y, z),
-                             &currentLength);
+                             currentLength);
             }
         }
         if (currentLength > 0) {
@@ -76,14 +76,28 @@ CoordType getDistance(Point3D<CoordType>     point,
     return currentLength;
 }
 
-template <class CoordType, VoxelArray<CoordType> const &array, CoordType *distArray>
-struct IndexCompare3D {
-    bool operator() (Index3D const &ind1, Index3D const &ind2) const {
-        unsigned num1 = array.num(ind1);
-        unsigned num2 = array.num(ind2);
+template <class CoordType>
+struct SortableIndex3D: Index3D {
+    /* Some additional fields that are needed for sorting */
+    SortableIndex3D<CoordType> (Index3D const &_index3d,
+                                VoxelArray<CoordType> const &_array,
+                                CoordType const *_distArray):
+        Index3D(_index3d), array(_array), distArray(_distArray) {}
+
+    VoxelArray<CoordType> const &array;
+    CoordType const *distArray;
+};
+
+template <class CoordType>
+struct SortableIndexCompare3D {
+    bool operator() (SortableIndex3D<CoordType> const &ind1,
+                     SortableIndex3D<CoordType> const &ind2) const
+    {
+        unsigned num1 = ind1.array.num(ind1);
+        unsigned num2 = ind2.array.num(ind2);
         /* First, order by distance */
-        if (!D_EQUAL(distArray[num1], distArray[num2])) {
-            return distArray[num1] > distArray[num2];
+        if (!D_EQUAL(ind1.distArray[num1], ind2.distArray[num2])) {
+            return ind1.distArray[num1] > ind2.distArray[num2];
         }
         /* If distances are equal, order by j */
         return num1 > num2;
@@ -91,25 +105,27 @@ struct IndexCompare3D {
 };
 
 template <class CoordType>
-CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
-                            CoordType                   *distArray)
+void fillDistanceArray(VoxelArray<CoordType> const &array,
+                       CoordType                   *distArray)
 /* We expect that distArray points to a memory of the same
  * size as array.voxels. */
 {
     Index3D neighbour;
-    Index3D &currentInd;
-    std::set<Index3D, IndexCompare3D<CoordType, array, distArray> > processSet;
-    CoordType dist, currentDist;
+    std::set<SortableIndex3D<CoordType>, SortableIndexCompare3D<CoordType> > processSet;
+    CoordType dist;
     unsigned num;
 
     for (unsigned x = 0; x < array.size.x; ++x) {
         for (unsigned y = 0; y < array.size.y; ++y) {
             for (unsigned z = 0; z < array.size.z; ++z) {
-                currentInd = Index3D(x, y, z);
+                Index3D currentInd = Index3D(x, y, z);
                 num = array.num(currentInd);
                 if (array.voxels[num]) {
                     distArray[num] = 0;
-                    processSet.insert(currentInd);
+                    processSet.insert(SortableIndex3D<CoordType>(
+                                      currentInd, array, distArray));
+                } else {
+                    distArray[num] = -1;
                 }
             }
         }
@@ -129,7 +145,7 @@ CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
          * 3) remove currentInd from the set
          */
 
-        currentInd = processSet.begin();
+        SortableIndex3D<CoordType> const currentInd = *processSet.begin();
 
         for (unsigned char j = 0; j < 27; ++j) {
             Vector3D<signed char> diff(
@@ -159,7 +175,7 @@ CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
             num = array.num(neighbour);
             if (distArray[num] < -.5) {
                 distArray[num] = dist;
-                processSet.insert(neighbour);
+                processSet.insert(SortableIndex3D<CoordType>(neighbour, array, distArray));
             } else if (distArray[num] > dist) {
                 distArray[num] = dist;
             }
@@ -167,3 +183,6 @@ CoordType fillDistanceArray(VoxelArray<CoordType> const &array,
         processSet.erase(currentInd);
     }
 }
+
+double (*getDistance_d) (Point3D<double>, VoxelArray<double> &) = getDistance<double>;
+void (*fillDistanceArray_d) (VoxelArray<double> const &, double *) = fillDistanceArray<double>;
