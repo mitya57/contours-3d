@@ -1,6 +1,9 @@
 #ifndef _STRUCT_H
 #define _STRUCT_H
-#include <cmath>
+#include <climits>  /* For CHAR_BIT */
+#include <cmath>    /* For sqrt */
+#include <cstddef>  /* For size_t */
+#include <cstring>  /* For memset */
 
 template <class CoordType=float> struct Point3D;
 template <class CoordType=float> struct Vector3D;
@@ -15,6 +18,8 @@ struct Point3D {
     CoordType y;
     CoordType z;
 
+    Point3D<CoordType>():
+        x(0.), y(0.), z(0.) {}
     Point3D<CoordType>(CoordType x, CoordType y, CoordType z):
         x(x), y(y), z(z) {}
 
@@ -38,8 +43,12 @@ struct Vector3D {
     CoordType y;
     CoordType z;
 
+    Vector3D<CoordType>():
+        x(0.), y(0.), z(0.) {}
     Vector3D<CoordType>(CoordType x, CoordType y, CoordType z):
         x(x), y(y), z(z) {}
+    Vector3D<CoordType>(Vector3D<CoordType> const &that):
+        x(that.x), y(that.y), z(that.z) {}
 
     inline CoordType length() const {
         return sqrt(x * x + y * y + z * z);
@@ -72,12 +81,36 @@ struct Box {
     }
 };
 
+struct BitSet {
+    signed char *data;
+
+    BitSet(size_t length) {
+        data = new signed char[length / CHAR_BIT + 1];
+        memset(data, 0, length / CHAR_BIT + 1);
+    }
+    ~BitSet() {
+        delete[] data;
+    }
+
+    inline void setValue(size_t i, bool value) const {
+        if ((*this)[i] != value) {
+            data[i / CHAR_BIT] ^= (value << (i % CHAR_BIT));
+        }
+    }
+    inline bool operator[] (size_t i) const {
+        return (data[i / CHAR_BIT] >> (i % CHAR_BIT)) & 1;
+    }
+};
+
 template <class CoordType>
 struct VoxelArray {
-    bool *voxels;
+    BitSet voxels;
     Point3D<CoordType> start;
     Vector3D<CoordType> voxelSize;
     Index3D size;
+
+    VoxelArray<CoordType>(Index3D _size):
+        voxels(_size.x && _size.y && _size.z), size(_size) {}
 
     inline Box<CoordType> getBox() const {
         return Box<CoordType>(start, start + voxelSize * size);
@@ -90,7 +123,7 @@ struct VoxelArray {
     inline unsigned num(Index3D const &index) const {
         return index.z * size.x * size.y + index.y * size.x + index.z;
     }
-    inline bool &operator [] (Index3D const &index) {
+    inline bool operator [] (Index3D const &index) const {
         return voxels[num(index)];
     }
     inline CoordType getVoxelCenter (Index3D const &index) const {
