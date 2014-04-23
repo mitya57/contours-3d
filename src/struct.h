@@ -45,8 +45,8 @@ struct Vector3D {
 
     Vector3D<CoordType>():
         x(0.), y(0.), z(0.) {}
-    Vector3D<CoordType>(CoordType x, CoordType y, CoordType z):
-        x(x), y(y), z(z) {}
+    Vector3D<CoordType>(CoordType _x, CoordType _y, CoordType _z):
+        x(_x), y(_y), z(_z) {}
     Vector3D<CoordType>(Vector3D<CoordType> const &that):
         x(that.x), y(that.y), z(that.z) {}
 
@@ -97,7 +97,7 @@ struct BitSet {
 
     inline void setValue(size_t i, bool value) const {
         if ((*this)[i] != value) {
-            data[i / CHAR_BIT] ^= (value << (i % CHAR_BIT));
+            data[i / CHAR_BIT] ^= (1 << (i % CHAR_BIT));
         }
     }
     inline bool operator[] (size_t i) const {
@@ -113,7 +113,7 @@ struct VoxelArray {
     Index3D size;
 
     VoxelArray<CoordType>(Index3D _size):
-        voxels(_size.x && _size.y && _size.z), size(_size) {}
+        voxels(_size.x * _size.y * _size.z), size(_size) {}
 
     inline Box<CoordType> getBox() const {
         return Box<CoordType>(start, start + voxelSize * size);
