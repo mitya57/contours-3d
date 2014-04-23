@@ -56,6 +56,9 @@ struct Vector3D {
     inline Vector3D<CoordType> operator * (Index3D const &factors) const {
         return Vector3D<CoordType>(x * factors.x, y * factors.y, z * factors.z);
     }
+    inline Vector3D<CoordType> operator * (CoordType factor) const {
+        return Vector3D<CoordType>(x * factor, y * factor, z * factor);
+    }
     inline Vector3D<CoordType> &operator = (Vector3D<CoordType> const &that) {
         x = that.x;
         y = that.y;
@@ -126,8 +129,11 @@ struct VoxelArray {
     inline bool operator [] (Index3D const &index) const {
         return voxels[num(index)];
     }
-    inline CoordType getVoxelCenter (Index3D const &index) const {
-        return start + (voxelSize / 2) + (voxelSize * index);
+    inline void setVoxel(Index3D const &index, bool value) {
+        voxels.setValue(num(index), value);
+    }
+    inline Point3D<CoordType> getVoxelCenter(Index3D const &index) const {
+        return start + (voxelSize * .5) + (voxelSize * index);
     }
 };
 
