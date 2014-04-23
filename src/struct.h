@@ -124,7 +124,7 @@ struct VoxelArray {
                 index.z > 0 && index.z < size.z);
     }
     inline unsigned num(Index3D const &index) const {
-        return index.z * size.x * size.y + index.y * size.x + index.z;
+        return index.z * size.x * size.y + index.y * size.x + index.x;
     }
     inline bool operator [] (Index3D const &index) const {
         return voxels[num(index)];

@@ -170,8 +170,11 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
                 continue;
             }
 
-            dist = distArray[array.num(currentInd)] +
-                   Vector3D<CoordType>(diff.x - 1, diff.y - 1, diff.z - 1).length();
+            dist = distArray[array.num(currentInd)] + Vector3D<CoordType>(
+                array.voxelSize.x * (diff.x - 1),
+                array.voxelSize.y * (diff.y - 1),
+                array.voxelSize.z * (diff.z - 1)
+            ).length();
             num = array.num(neighbour);
             if (distArray[num] < -.5) {
                 distArray[num] = dist;
