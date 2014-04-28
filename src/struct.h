@@ -47,8 +47,6 @@ struct Vector3D {
         x(0.), y(0.), z(0.) {}
     Vector3D<CoordType>(CoordType _x, CoordType _y, CoordType _z):
         x(_x), y(_y), z(_z) {}
-    Vector3D<CoordType>(Vector3D<CoordType> const &that):
-        x(that.x), y(that.y), z(that.z) {}
 
     inline CoordType length() const {
         return sqrt(x * x + y * y + z * z);
@@ -58,12 +56,6 @@ struct Vector3D {
     }
     inline Vector3D<CoordType> operator * (CoordType factor) const {
         return Vector3D<CoordType>(x * factor, y * factor, z * factor);
-    }
-    inline Vector3D<CoordType> &operator = (Vector3D<CoordType> const &that) {
-        x = that.x;
-        y = that.y;
-        z = that.z;
-        return *this;
     }
     inline Vector3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
         return Vector3D<CoordType>(x + that.x, y + that.y, z + that.z);
