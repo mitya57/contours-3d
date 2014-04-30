@@ -1,5 +1,5 @@
 #include <set>
-#include "function.h"
+#include "dist.h"
 
 template <class CoordType>
 inline bool dEqual(CoordType d1, CoordType d2) {

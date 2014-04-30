@@ -1,5 +1,5 @@
-#ifndef _FUNCTION_H
-#define _FUNCTION_H
+#ifndef __DIST_H
+#define __DIST_H
 #include "struct.h"
 
 template <class CoordType>
@@ -10,4 +10,4 @@ template <class CoordType>
 void fillDistanceArray(VoxelArray<CoordType> const &array,
                        CoordType                   *distArray);
 
-#endif /* _FUNCTION_H */
+#endif /* __DIST_H */

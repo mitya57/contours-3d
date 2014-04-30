@@ -1,5 +1,5 @@
-#ifndef _STRUCT_H
-#define _STRUCT_H
+#ifndef __STRUCT_H
+#define __STRUCT_H
 #include <climits>  /* For CHAR_BIT */
 #include <cmath>    /* For sqrt */
 #include <cstddef>  /* For size_t */
@@ -129,4 +129,4 @@ struct VoxelArray {
     }
 };
 
-#endif /* _STRUCT_H */
+#endif /* __STRUCT_H */
