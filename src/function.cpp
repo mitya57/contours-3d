@@ -1,7 +1,10 @@
 #include <set>
 #include "function.h"
 
-#define D_EQUAL(d1, d2) (fabs(d1 - d2) < 1e-10)
+template <class CoordType>
+inline bool dEqual(CoordType d1, CoordType d2) {
+    return fabs(d1 - d2) < 1e-10;
+}
 
 template <class CoordType>
 void processPoint(Point3D<CoordType>           point,
@@ -96,7 +99,7 @@ struct SortableIndexCompare3D {
         unsigned num1 = ind1.array.num(ind1);
         unsigned num2 = ind2.array.num(ind2);
         /* First, order by distance */
-        if (!D_EQUAL(ind1.distArray[num1], ind2.distArray[num2])) {
+        if (!dEqual(ind1.distArray[num1], ind2.distArray[num2])) {
             return ind1.distArray[num1] > ind2.distArray[num2];
         }
         /* If distances are equal, order by j */
