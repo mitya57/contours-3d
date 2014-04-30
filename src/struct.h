@@ -18,9 +18,9 @@ struct Point3D {
     CoordType y;
     CoordType z;
 
-    Point3D<CoordType>():
+    Point3D():
         x(0.), y(0.), z(0.) {}
-    Point3D<CoordType>(CoordType x, CoordType y, CoordType z):
+    Point3D(CoordType x, CoordType y, CoordType z):
         x(x), y(y), z(z) {}
 
     inline Point3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
@@ -43,9 +43,9 @@ struct Vector3D {
     CoordType y;
     CoordType z;
 
-    Vector3D<CoordType>():
+    Vector3D():
         x(0), y(0), z(0) {}
-    Vector3D<CoordType>(CoordType _x, CoordType _y, CoordType _z):
+    Vector3D(CoordType _x, CoordType _y, CoordType _z):
         x(_x), y(_y), z(_z) {}
 
     inline CoordType length() const {
@@ -67,7 +67,7 @@ struct Box {
     Point3D<CoordType> min;
     Point3D<CoordType> max;
 
-    Box<CoordType>(Point3D<CoordType> min, Point3D<CoordType> max):
+    Box(Point3D<CoordType> min, Point3D<CoordType> max):
         min(min), max(max) {}
 
     inline bool contains(Point3D<CoordType> point) const {
@@ -104,7 +104,7 @@ struct VoxelArray {
     Vector3D<CoordType> voxelSize;
     Index3D size;
 
-    VoxelArray<CoordType>(Index3D _size):
+    VoxelArray(Index3D _size):
         voxels(_size.x * _size.y * _size.z), size(_size) {}
 
     inline Box<CoordType> getBox() const {
