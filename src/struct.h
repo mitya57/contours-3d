@@ -44,7 +44,7 @@ struct Vector3D {
     CoordType z;
 
     Vector3D<CoordType>():
-        x(0.), y(0.), z(0.) {}
+        x(0), y(0), z(0) {}
     Vector3D<CoordType>(CoordType _x, CoordType _y, CoordType _z):
         x(_x), y(_y), z(_z) {}
 

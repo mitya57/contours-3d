@@ -26,9 +26,9 @@ CoordType getDistance(Point3D<CoordType>     point,
     unsigned x, y, z;
 
     Index3D initialIndex(
-        (point.x - array.start.x) / array.voxelSize.x,
-        (point.y - array.start.y) / array.voxelSize.y,
-        (point.z - array.start.z) / array.voxelSize.z
+        (unsigned) ((point.x - array.start.x) / array.voxelSize.x),
+        (unsigned) ((point.y - array.start.y) / array.voxelSize.y),
+        (unsigned) ((point.z - array.start.z) / array.voxelSize.z)
     );
     if (array[initialIndex]) {
         return 0;
