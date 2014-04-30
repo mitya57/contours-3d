@@ -1,5 +1,5 @@
-#include "function.h"
 #include <set>
+#include "function.h"
 
 #define D_EQUAL(d1, d2) (fabs(d1 - d2) < 1e-10)
 
