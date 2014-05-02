@@ -129,4 +129,9 @@ struct VoxelArray {
     }
 };
 
+typedef Point3D<double> Point3Dd;
+typedef Vector3D<double> Vector3Dd;
+typedef Point3D<float> Point3Df;
+typedef Vector3D<float> Vector3Df;
+
 #endif /* __STRUCT_H */
