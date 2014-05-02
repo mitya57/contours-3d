@@ -6,6 +6,55 @@ static const GLfloat LightPosition[4] = {0.0f, 0.0f, 10.0f, 1.0f};
 static const GLfloat LightAmbient[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 static const GLfloat LightDiffuse[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
+static const GLfloat RedColor[3]  = {1.0f, 0.4f, 0.4f};
+
+/* TODO: use GL_SMOOTH */
+
+TriangView::TriangView(QWidget *parent):
+    QGLWidget(parent)
+{
+    /* Drawing a cube:
+     *
+     *     6-------7                     diagonals:
+     *  4-------5  |     z   y           0-3 0-5 0-6 3-5 3-6 5-6
+     *  |  |    |  |     |  /
+     *  |  2----|--3     | /
+     *  0-------1        |/______ x
+     *
+     */
+
+    for (unsigned i = 0; i < 8; ++i) {
+        points.push_back(Point3Df(i & 1, i & 2, i & 4));
+    }
+
+    triangles.push_back(Triangle3Df(0, 1, 3, 0.f, 0.f, -1.f));
+    triangles.push_back(Triangle3Df(0, 2, 3, 0.f, 0.f, -1.f));
+    triangles.push_back(Triangle3Df(0, 1, 5, 0.f, -1.f, 0.f));
+    triangles.push_back(Triangle3Df(0, 4, 5, 0.f, -1.f, 0.f));
+    triangles.push_back(Triangle3Df(0, 2, 6, -1.f, 0.f, 0.f));
+    triangles.push_back(Triangle3Df(0, 4, 6, -1.f, 0.f, 0.f));
+    triangles.push_back(Triangle3Df(3, 1, 5, 1.f, 0.f, 0.f));
+    triangles.push_back(Triangle3Df(3, 7, 5, 1.f, 0.f, 0.f));
+    triangles.push_back(Triangle3Df(3, 2, 6, 0.f, 1.f, 0.f));
+    triangles.push_back(Triangle3Df(3, 7, 6, 0.f, 1.f, 0.f));
+    triangles.push_back(Triangle3Df(5, 4, 6, 0.f, 0.f, 1.f));
+    triangles.push_back(Triangle3Df(5, 7, 6, 0.f, 0.f, 1.f));
+}
+
+void TriangView::drawTriangles() {
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RedColor);
+    glBegin(GL_TRIANGLES);
+    for (unsigned i = 0; i < triangles.size(); ++i) {
+        for (unsigned j = 0; j < 3; ++j) {
+            Point3Df point = points[triangles[i].ind[j]];
+            glVertex3f(point.x, point.y, point.z);
+        }
+        Vector3Df normal = triangles[i].normal;
+        glNormal3f(normal.x, normal.y, normal.z);
+    }
+    glEnd();
+}
+
 void TriangView::initializeGL() {
     qglClearColor(QPalette().color(QPalette::Window));
     glEnable(GL_DEPTH_CLAMP);
@@ -39,6 +88,8 @@ void TriangView::paintGL() {
     glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
     glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
     glEnable(GL_LIGHT1);
+
+    drawTriangles();
 }
 
 void TriangView::mousePressEvent(QMouseEvent *event) {
