@@ -11,7 +11,7 @@ static const GLfloat RedColor[3]  = {1.0f, 0.4f, 0.4f};
 /* TODO: use GL_SMOOTH */
 
 TriangView::TriangView(QWidget *parent):
-    QGLWidget(parent)
+    QGLWidget(parent), scale(.8)
 {
     /* Drawing a cube:
      *
@@ -24,7 +24,11 @@ TriangView::TriangView(QWidget *parent):
      */
 
     for (unsigned i = 0; i < 8; ++i) {
-        points.push_back(Point3Df(i & 1, i & 2, i & 4));
+        points.push_back(Point3Df(
+            (i & 1) ? .5f : -.5f,
+            (i & 2) ? .5f : -.5f,
+            (i & 4) ? .5f : -.5f
+        ));
     }
 
     triangles.push_back(Triangle3Df(0, 1, 3, 0.f, 0.f, -1.f));
