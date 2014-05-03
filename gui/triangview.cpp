@@ -49,19 +49,31 @@ void TriangView::drawTriangles() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RedColor);
     glBegin(GL_TRIANGLES);
     for (unsigned i = 0; i < triangles.size(); ++i) {
+        Vector3Df normal = triangles[i].normal;
+        glNormal3f(normal.x, normal.y, normal.z);
         for (unsigned j = 0; j < 3; ++j) {
             Point3Df point = points[triangles[i].ind[j]];
             glVertex3f(point.x, point.y, point.z);
         }
-        Vector3Df normal = triangles[i].normal;
-        glNormal3f(normal.x, normal.y, normal.z);
     }
     glEnd();
 }
 
 void TriangView::initializeGL() {
     qglClearColor(QPalette().color(QPalette::Window));
-    glEnable(GL_DEPTH_CLAMP);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_NORMALIZE);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
+
+    glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void TriangView::resizeGL(int width, int height) {
@@ -87,11 +99,6 @@ void TriangView::paintGL() {
     glRotatef(xRot, 1.0f, 0.0f, 0.0f);
     glRotatef(yRot, 0.0f, 1.0f, 0.0f);
     glRotatef(zRot, 0.0f, 0.0f, 1.0f);
-    glEnable(GL_LIGHTING);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
-    glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
-    glEnable(GL_LIGHT1);
 
     drawTriangles();
 }
