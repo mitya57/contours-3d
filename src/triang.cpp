@@ -60,8 +60,8 @@ appendToVector<IndexPair3D>;
 
 void fillVectors(std::vector<Point3Df> &points,
                  std::vector<Triangle3Df> &triangles) {
-    const unsigned size = 20;
-    const float rsize = .05f;
+    const unsigned size = 10;
+    const float rsize = .1f;
 
     VoxelArray<float> voxelArray(Index3D(size, size, size));
     voxelArray.start = Point3Df(0.f, 0.f, 0.f);
@@ -132,6 +132,16 @@ void fillVectors(std::vector<Point3Df> &points,
                     addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[0]),
                                                          ind3d + getVertexOffset(tnumbers[3]))),
                     addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[1]),
+                                                         ind3d + getVertexOffset(tnumbers[3])))
+                ));
+            } else if (negative == 3) {
+                /* Triangle(03, 13, 23) */
+                triangles.push_back(Triangle3Df(
+                    addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[0]),
+                                                         ind3d + getVertexOffset(tnumbers[3]))),
+                    addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[1]),
+                                                         ind3d + getVertexOffset(tnumbers[3]))),
+                    addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[2]),
                                                          ind3d + getVertexOffset(tnumbers[3])))
                 ));
             }
