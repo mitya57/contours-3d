@@ -1,6 +1,9 @@
 #include <algorithm>
 #include "triang.h"
 
+static const Point3Df center(.5f, .5f, .5f);
+static const float radius = .4f;
+
 Index3D getVertexOffset(char vnumber) {
     return Index3D(
         vnumber & 1,
@@ -10,7 +13,7 @@ Index3D getVertexOffset(char vnumber) {
 }
 
 float mySphereFunction(Point3Df point) {
-    return .4f - (point - Point3Df(.5f, .5f, .5f)).length();
+    return radius - (point - center).length();
 }
 
 void getTetrahedByIndex(char index, char *tnumbers) {
@@ -55,8 +58,8 @@ int appendToVector(std::vector<Type> &vect, Type const &element) {
 int (*addIndexPair) (std::vector<IndexPair3D> &, IndexPair3D const &) =
 appendToVector<IndexPair3D>;
 
-void fillVectors(std::vector<Point3Df> points,
-                 std::vector<Triangle3Df> triangles) {
+void fillVectors(std::vector<Point3Df> &points,
+                 std::vector<Triangle3Df> &triangles) {
     const unsigned size = 20;
     const float rsize = .05f;
 
@@ -103,7 +106,6 @@ void fillVectors(std::vector<Point3Df> points,
                     negative = k + 1;
                 }
             }
-            /* FIXME: set normals correctly */
             if (negative == 1) {
                 /* Triangle(01, 02, 03) */
                 triangles.push_back(Triangle3Df(
@@ -115,7 +117,7 @@ void fillVectors(std::vector<Point3Df> points,
                                                          ind3d + getVertexOffset(tnumbers[3])))
                 ));
             } else if (negative == 2) {
-                /* Rectangle(02, 12, 13), Rectangle(02, 03, 13) */
+                /* Triangle(02, 12, 13), Triangle(02, 03, 13) */
                 triangles.push_back(Triangle3Df(
                     addIndexPair(indexPairs, IndexPair3D(ind3d + getVertexOffset(tnumbers[0]),
                                                          ind3d + getVertexOffset(tnumbers[2]))),
@@ -143,6 +145,13 @@ void fillVectors(std::vector<Point3Df> points,
         Point3Df p1 = Point3Df(rsize, rsize, rsize) * it->i1;
         Point3Df p2 = Point3Df(rsize, rsize, rsize) * it->i2;
         points.push_back((p1 * val2 + p2 * (-val1)) / (val2 - val1));
+    }
+
+    std::vector<Triangle3Df>::iterator tr;
+    for (tr = triangles.begin(); tr != triangles.end(); ++tr) {
+        tr->normal = (points[tr->ind[0]] + points[tr->ind[1]] + points[tr->ind[2]]) / 3;
+        tr->normal = tr->normal - center;
+        tr->normal = tr->normal / tr->normal.length();
     }
 
     delete[] distArray;

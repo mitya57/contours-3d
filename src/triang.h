@@ -28,7 +28,7 @@ struct Triangle3D {
 typedef Triangle3D<double> Triangle3Dd;
 typedef Triangle3D<float> Triangle3Df;
 
-void fillVectors(std::vector<Point3Df> points,
-                 std::vector<Triangle3Df> triangles);
+void fillVectors(std::vector<Point3Df> &points,
+                 std::vector<Triangle3Df> &triangles);
 
 #endif /* __TRIANG_H */
