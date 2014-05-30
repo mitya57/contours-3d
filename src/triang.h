@@ -10,7 +10,7 @@ struct Triangle3D {
     Vector3D<CoordType> normal;
 
     Triangle3D(unsigned ind1, unsigned ind2, unsigned ind3,
-               CoordType nrmX, CoordType nrmY, CoordType nrmZ):
+               CoordType nrmX = 0, CoordType nrmY = 0, CoordType nrmZ = 0):
         normal(nrmX, nrmY, nrmZ)
     {
         ind[0] = ind1;
