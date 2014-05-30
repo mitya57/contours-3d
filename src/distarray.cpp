@@ -29,6 +29,35 @@ struct SortableIndexCompare3D {
     }
 };
 
+bool fillNeighbour(Index3D const         &size,
+                   Index3D const         &currentInd,
+                   signed char            j,
+                   Index3D               &neighbour,
+                   Vector3D<signed char> &diff) {
+    diff = Vector3D<signed char>(
+         j % 3,   (j % 9) / 3,   j / 9
+    );
+    if (
+        j == 13 || /* equal to currentInd */
+        !(currentInd.x || diff.x) ||
+        !(currentInd.y || diff.y) ||
+        !(currentInd.z || diff.z)
+    ) {
+        return false;
+    }
+    neighbour.x = currentInd.x + diff.x - 1;
+    neighbour.y = currentInd.y + diff.y - 1;
+    neighbour.z = currentInd.z + diff.z - 1;
+    if (
+        neighbour.x >= size.x ||
+        neighbour.y >= size.y ||
+        neighbour.z >= size.z
+    ) {
+        return false;
+    }
+    return true;
+}
+
 template <class CoordType>
 void fillDistanceArray(VoxelArray<CoordType> const &array,
                        CoordType                   *distArray)
@@ -36,18 +65,28 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
  * size as array.voxels. */
 {
     Index3D neighbour;
+    Vector3D<signed char> diff;
     std::set<SortableIndex3D<CoordType>, SortableIndexCompare3D<CoordType> > processSet;
     CoordType dist;
     unsigned num;
 
     for (unsigned num = 0; num < array.elementsCount; ++num) {
         Index3D currentInd = array.index3d(num);
+        distArray[num] = -1;
         if (array.voxels[num]) {
-            distArray[num] = 0;
-            processSet.insert(SortableIndex3D<CoordType>(
-                              currentInd, array, distArray));
-        } else {
-            distArray[num] = -1;
+            bool foundNotInArray = false;
+            for (unsigned char j = 0; j < 27; ++j) {
+                if (!fillNeighbour(array.size, currentInd, j, neighbour, diff)) {
+                    if (!array.voxels[array.num(neighbour)]) {
+                        foundNotInArray = true;
+                    }
+                }
+            }
+            if (foundNotInArray) {
+                distArray[num] = 0;
+                processSet.insert(SortableIndex3D<CoordType>(
+                                  currentInd, array, distArray));
+            }
         }
     }
 
@@ -68,28 +107,9 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
         SortableIndex3D<CoordType> const currentInd = *processSet.begin();
 
         for (unsigned char j = 0; j < 27; ++j) {
-            Vector3D<signed char> diff(
-                j % 3,   (j % 9) / 3,   j / 9
-            );
-            if (
-                j == 13 || /* equal to currentInd */
-                !(currentInd.x || diff.x) ||
-                !(currentInd.y || diff.y) ||
-                !(currentInd.z || diff.z)
-            ) {
+            if (!fillNeighbour(array.size, currentInd, j, neighbour, diff)) {
                 continue;
             }
-            neighbour.x = currentInd.x + diff.x - 1;
-            neighbour.y = currentInd.y + diff.y - 1;
-            neighbour.z = currentInd.z + diff.z - 1;
-            if (
-                neighbour.x >= array.size.x ||
-                neighbour.y >= array.size.y ||
-                neighbour.z >= array.size.z
-            ) {
-                continue;
-            }
-
             dist = distArray[array.num(currentInd)] + Vector3D<CoordType>(
                 array.voxelSize.x * (diff.x - 1),
                 array.voxelSize.y * (diff.y - 1),
@@ -105,6 +125,13 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
         }
         processSet.erase(currentInd);
     }
+
+    for (unsigned num = 0; num < array.elementsCount; ++num) {
+        if (array.voxels[num]) {
+            distArray[num] = -distArray[num];
+        }
+    }
 }
 
 void (*fillDistanceArray_d) (VoxelArray<double> const &, double *) = fillDistanceArray<double>;
+void (*fillDistanceArray_f) (VoxelArray<float> const &, float *) = fillDistanceArray<float>;

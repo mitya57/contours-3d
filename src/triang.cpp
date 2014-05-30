@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "distarray.h"
 #include "triang.h"
 
 static const Point3Df center(.5f, .5f, .5f);
@@ -13,7 +14,7 @@ Index3D getVertexOffset(char vnumber) {
 }
 
 float mySphereFunction(Point3Df point) {
-    return radius - (point - center).length();
+    return (point - center).length() - radius;
 }
 
 void getTetrahedByIndex(char index, char *tnumbers) {
@@ -72,17 +73,24 @@ void fillVectors(std::vector<Point3Df> &points,
     unsigned negative;
     char tnumbers[4];
     float fvalues[4];
+    float dist;
 
     std::vector<IndexPair3D> indexPairs;
 
-    /* FIXME: fill voxelArray and then use fillDistanceArray here,
-     *        instead of filling the distance array manually.
-     */
-
+#ifdef DIRECT_FILLING
     for (i = 0; i < voxelArray.elementsCount; ++i) {
         distArray[i] = mySphereFunction(
             voxelArray.getVoxelCenter(voxelArray.index3d(i)));
     }
+#else
+    for (i = 0; i < voxelArray.elementsCount; ++i) {
+        dist = mySphereFunction(
+            voxelArray.getVoxelCenter(voxelArray.index3d(i)));
+        voxelArray.voxels.setValue(i, dist < 0);
+    }
+
+    fillDistanceArray<float>(voxelArray, distArray);
+#endif
 
     for (i = 0; i < voxelArray.elementsCount; ++i) {
         Index3D ind3d = voxelArray.index3d(i);
