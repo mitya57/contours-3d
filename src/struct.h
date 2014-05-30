@@ -5,37 +5,11 @@
 #include <cstddef>  /* For size_t */
 #include <cstring>  /* For memset */
 
-template <class CoordType=float> struct Point3D;
 template <class CoordType=float> struct Vector3D;
 template <class CoordType=float> struct Box;
 template <class CoordType=float> struct VoxelArray;
 
 typedef Vector3D<unsigned> Index3D;
-
-template <class CoordType>
-struct Point3D {
-    CoordType x;
-    CoordType y;
-    CoordType z;
-
-    Point3D():
-        x(0.), y(0.), z(0.) {}
-    Point3D(CoordType x, CoordType y, CoordType z):
-        x(x), y(y), z(z) {}
-
-    inline Point3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
-        return Point3D<CoordType>(x + that.x, y + that.y, z + that.z);
-    }
-    inline Point3D<CoordType> operator * (CoordType factor) const {
-        return Point3D<CoordType>(x * factor, y * factor, z * factor);
-    }
-    inline Point3D<CoordType> operator / (CoordType factor) const {
-        return Point3D<CoordType>(x / factor, y / factor, z / factor);
-    }
-    inline Vector3D<CoordType> operator - (Point3D<CoordType> const &that) const {
-        return Vector3D<CoordType>(x - that.x, y - that.y, z - that.z);
-    }
-};
 
 template <class CoordType>
 struct Vector3D {
@@ -57,10 +31,21 @@ struct Vector3D {
     inline Vector3D<CoordType> operator * (CoordType factor) const {
         return Vector3D<CoordType>(x * factor, y * factor, z * factor);
     }
+    inline Vector3D<CoordType> operator / (CoordType factor) const {
+        return Vector3D<CoordType>(x / factor, y / factor, z / factor);
+    }
     inline Vector3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
         return Vector3D<CoordType>(x + that.x, y + that.y, z + that.z);
     }
+    inline Vector3D<CoordType> operator - (Vector3D<CoordType> const &that) const {
+        return Vector3D<CoordType>(x - that.x, y - that.y, z - that.z);
+    }
+    inline bool operator == (Index3D const &that) const {
+        return x == that.x && y == that.y && z == that.z;
+    }
 };
+
+#define Point3D Vector3D
 
 template <class CoordType>
 struct Box {
@@ -120,7 +105,7 @@ struct VoxelArray {
     inline unsigned num(Index3D const &index) const {
         return index.z * size.x * size.y + index.y * size.x + index.x;
     }
-    inline Index3D index3d(num index) const {
+    inline Index3D index3d(unsigned index) const {
         unsigned posXY = index % (size.x * size.y);
         return Index3D(
             posXY % size.x,
