@@ -118,19 +118,14 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
     CoordType dist;
     unsigned num;
 
-    for (unsigned x = 0; x < array.size.x; ++x) {
-        for (unsigned y = 0; y < array.size.y; ++y) {
-            for (unsigned z = 0; z < array.size.z; ++z) {
-                Index3D currentInd = Index3D(x, y, z);
-                num = array.num(currentInd);
-                if (array.voxels[num]) {
-                    distArray[num] = 0;
-                    processSet.insert(SortableIndex3D<CoordType>(
-                                      currentInd, array, distArray));
-                } else {
-                    distArray[num] = -1;
-                }
-            }
+    for (unsigned num = 0; num < array.elementsCount; ++num) {
+        Index3D currentInd = array.index3d(num);
+        if (array.voxels[num]) {
+            distArray[num] = 0;
+            processSet.insert(SortableIndex3D<CoordType>(
+                              currentInd, array, distArray));
+        } else {
+            distArray[num] = -1;
         }
     }
 

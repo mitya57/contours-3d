@@ -99,13 +99,15 @@ struct BitSet {
 
 template <class CoordType>
 struct VoxelArray {
+    unsigned elementsCount;
     BitSet voxels;
     Point3D<CoordType> start;
     Vector3D<CoordType> voxelSize;
     Index3D size;
 
     VoxelArray(Index3D _size):
-        voxels(_size.x * _size.y * _size.z), size(_size) {}
+        elementsCount(_size.x * _size.y * _size.z),
+        voxels(elementsCount), size(_size) {}
 
     inline Box<CoordType> getBox() const {
         return Box<CoordType>(start, start + voxelSize * size);
@@ -117,6 +119,14 @@ struct VoxelArray {
     }
     inline unsigned num(Index3D const &index) const {
         return index.z * size.x * size.y + index.y * size.x + index.x;
+    }
+    inline Index3D index3d(num index) const {
+        unsigned posXY = index % (size.x * size.y);
+        return Index3D(
+            posXY % size.x,
+            posXY / size.x,
+            index / (size.x * size.y)
+        );
     }
     inline bool operator [] (Index3D const &index) const {
         return voxels[num(index)];
