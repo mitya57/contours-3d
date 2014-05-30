@@ -13,6 +13,7 @@ static const GLfloat RedColor[3]  = {1.0f, 0.4f, 0.4f};
 TriangView::TriangView(QWidget *parent):
     QGLWidget(parent), scale(.8)
 {
+#ifdef DRAW_CUBE
     /* Drawing a cube:
      *
      *    6-------7                  diagonals:
@@ -45,6 +46,9 @@ TriangView::TriangView(QWidget *parent):
     triangles.push_back(Triangle3Df(3, 7, 6, 0.f, 1.f, 0.f));
     triangles.push_back(Triangle3Df(5, 4, 6, 0.f, 0.f, 1.f));
     triangles.push_back(Triangle3Df(5, 7, 6, 0.f, 0.f, 1.f));
+#else
+    fillVectors(points, triangles);
+#endif
 }
 
 void TriangView::drawTriangles() {
