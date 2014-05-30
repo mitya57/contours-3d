@@ -43,6 +43,13 @@ struct Vector3D {
     inline bool operator == (Index3D const &that) const {
         return x == that.x && y == that.y && z == that.z;
     }
+    inline Vector3D<CoordType> vectorProduct(Vector3D<CoordType> const &that) const {
+        return Vector3D<CoordType> (
+            that.z * y - z * that.y,
+            that.x * z - x * that.z,
+            that.y * x - y * that.x
+        );
+    }
 };
 
 #define Point3D Vector3D
