@@ -61,14 +61,15 @@ appendToVector<IndexPair3D>;
 
 void fillVectors(std::vector<Point3Df> &points,
                  std::vector<Triangle3Df> &triangles) {
-    const unsigned size = 10;
-    const float rsize = .1f;
+    const unsigned size = 20;
+    const float rsize = .05f;
 
     VoxelArray<float> voxelArray(Index3D(size, size, size));
     voxelArray.start = Point3Df(0.f, 0.f, 0.f);
     voxelArray.voxelSize = Vector3Df(rsize, rsize, rsize);
 
     float *distArray = new float[voxelArray.elementsCount];
+    float *distArrayReverse = new float[voxelArray.elementsCount];
     unsigned i, j, k, l;
     unsigned negative;
     char tnumbers[4];
@@ -90,6 +91,13 @@ void fillVectors(std::vector<Point3Df> &points,
     }
 
     fillDistanceArray<float>(voxelArray, distArray);
+    fillDistanceArray<float>(voxelArray, distArrayReverse, true);
+
+    for (i = 0; i < voxelArray.elementsCount; ++i) {
+        if (voxelArray.voxels[i]) {
+            distArray[i] = -distArrayReverse[i];
+        }
+    }
 #endif
 
     for (i = 0; i < voxelArray.elementsCount; ++i) {
@@ -173,4 +181,5 @@ void fillVectors(std::vector<Point3Df> &points,
     }
 
     delete[] distArray;
+    delete[] distArrayReverse;
 }

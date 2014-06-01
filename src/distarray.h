@@ -4,7 +4,8 @@
 
 template <class CoordType>
 void fillDistanceArray(VoxelArray<CoordType> const &array,
-                       CoordType                   *distArray);
+                       CoordType                   *distArray,
+                       bool                         reverse = false);
 
 template <class CoordType>
 inline bool dEqual(CoordType d1, CoordType d2) {
