@@ -76,7 +76,7 @@ void fillDistanceArray(VoxelArray<CoordType> const &array,
         if (array.voxels[num]) {
             bool foundNotInArray = false;
             for (unsigned char j = 0; j < 27; ++j) {
-                if (!fillNeighbour(array.size, currentInd, j, neighbour, diff)) {
+                if (fillNeighbour(array.size, currentInd, j, neighbour, diff)) {
                     if (!array.voxels[array.num(neighbour)]) {
                         foundNotInArray = true;
                     }
