@@ -1,0 +1,4 @@
+- Check what is better: use reverse array filling (master) or
+  direct filling of everything except border voxels.
+- If the latter, try using 6 neighbours instead of 26.
+- Try Gauss-smoothing the distance array.
