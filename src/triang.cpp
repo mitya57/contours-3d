@@ -175,8 +175,13 @@ void fillVectors(std::vector<Point3Df> &points,
 
     std::vector<Triangle3Df>::iterator tr;
     for (tr = triangles.begin(); tr != triangles.end(); ++tr) {
+#ifdef NORMAL_IS_PRODUCT
         tr->normal = (points[tr->ind[0]] - points[tr->ind[1]]).vectorProduct(
                      (points[tr->ind[0]] - points[tr->ind[2]]));
+#else
+        tr->normal = (points[tr->ind[0]] + points[tr->ind[1]] + points[tr->ind[2]]) / 3;
+        tr->normal = tr->normal - center;
+#endif
         tr->normal = tr->normal / tr->normal.length();
     }
 
