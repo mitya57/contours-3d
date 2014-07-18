@@ -21,29 +21,38 @@ struct Vector3D {
         x(0), y(0), z(0) {}
     Vector3D(CoordType _x, CoordType _y, CoordType _z):
         x(_x), y(_y), z(_z) {}
+    template <class OtherType>
+    Vector3D(Vector3D<OtherType> const &that):
+        x(that.x), y(that.y), z(that.z) {}
 
     inline CoordType length() const {
         return sqrt(x * x + y * y + z * z);
     }
-    inline Vector3D<CoordType> operator * (Index3D const &factors) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> operator * (Vector3D<OtherType> const &factors) const {
         return Vector3D<CoordType>(x * factors.x, y * factors.y, z * factors.z);
     }
-    inline Vector3D<CoordType> operator * (CoordType factor) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> operator * (OtherType factor) const {
         return Vector3D<CoordType>(x * factor, y * factor, z * factor);
     }
-    inline Vector3D<CoordType> operator / (CoordType factor) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> operator / (OtherType factor) const {
         return Vector3D<CoordType>(x / factor, y / factor, z / factor);
     }
-    inline Vector3D<CoordType> operator + (Vector3D<CoordType> const &that) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> operator + (Vector3D<OtherType> const &that) const {
         return Vector3D<CoordType>(x + that.x, y + that.y, z + that.z);
     }
-    inline Vector3D<CoordType> operator - (Vector3D<CoordType> const &that) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> operator - (Vector3D<OtherType> const &that) const {
         return Vector3D<CoordType>(x - that.x, y - that.y, z - that.z);
     }
-    inline bool operator == (Index3D const &that) const {
+    inline bool operator == (Vector3D<CoordType> const &that) const {
         return x == that.x && y == that.y && z == that.z;
     }
-    inline Vector3D<CoordType> vectorProduct(Vector3D<CoordType> const &that) const {
+    template <class OtherType>
+    inline Vector3D<CoordType> vectorProduct(Vector3D<OtherType> const &that) const {
         return Vector3D<CoordType> (
             that.z * y - z * that.y,
             that.x * z - x * that.z,
