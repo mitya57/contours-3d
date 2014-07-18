@@ -2,7 +2,7 @@
 #include "distarray.h"
 #include "triang.h"
 
-static const Point3Df center(.5f, .5f, .5f);
+static const Point3Df sphCenter(.5f, .5f, .5f);
 static const float radius = .4f;
 
 Index3D getVertexOffset(char vnumber) {
@@ -14,7 +14,7 @@ Index3D getVertexOffset(char vnumber) {
 }
 
 float mySphereFunction(Point3Df point) {
-    return (point - center).length() - radius;
+    return (point - sphCenter).length() - radius;
 }
 
 void getTetrahedByIndex(char index, char *tnumbers) {
@@ -180,7 +180,7 @@ void fillVectors(std::vector<Point3Df> &points,
                      (points[tr->ind[0]] - points[tr->ind[2]]));
 #else
         tr->normal = (points[tr->ind[0]] + points[tr->ind[1]] + points[tr->ind[2]]) / 3;
-        tr->normal = tr->normal - center;
+        tr->normal = tr->normal - sphCenter;
 #endif
         tr->normal = tr->normal / tr->normal.length();
     }
