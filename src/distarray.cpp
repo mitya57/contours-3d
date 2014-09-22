@@ -22,10 +22,10 @@ struct SortableIndexCompare3D {
         unsigned num2 = ind2.array.num(ind2);
         /* First, order by distance */
         if (!dEqual(ind1.distArray[num1], ind2.distArray[num2])) {
-            return ind1.distArray[num1] > ind2.distArray[num2];
+            return ind1.distArray[num1] < ind2.distArray[num2];
         }
         /* If distances are equal, order by j */
-        return num1 > num2;
+        return num1 < num2;
     }
 };
 
