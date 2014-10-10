@@ -11,7 +11,8 @@ static const GLfloat RedColor[3]  = {1.0f, 0.4f, 0.4f};
 /* TODO: use GL_SMOOTH */
 
 TriangView::TriangView(QWidget *parent):
-    QGLWidget(parent), scale(.8)
+    QGLWidget(parent),
+    xRot(0), yRot(0), zRot(0), scale(.8)
 {
 #ifdef DRAW_CUBE
     /* Drawing a cube:
