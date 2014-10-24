@@ -56,9 +56,9 @@ void TriangView::drawTriangles() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, RedColor);
     glBegin(GL_TRIANGLES);
     for (unsigned i = 0; i < triangles.size(); ++i) {
-        Vector3Df normal = triangles[i].normal;
-        glNormal3f(normal.x, normal.y, normal.z);
         for (unsigned j = 0; j < 3; ++j) {
+            Vector3Df normal = triangles[i].normal[j];
+            glNormal3f(normal.x, normal.y, normal.z);
             Point3Df point = points[triangles[i].ind[j]];
             glVertex3f(point.x, point.y, point.z);
         }

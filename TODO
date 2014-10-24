@@ -3,7 +3,5 @@
 - If the latter, try using 6 neighbours instead of 26.
 - Try Gauss-smoothing the distance array.
 
-- Set normals to all three points in a triangle
-
 - Interface for:
   Line -> Matrix -> Gaussian filter -> Line
